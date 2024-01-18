@@ -154,8 +154,10 @@ app.get('/bots/:channel_url/:bot_id', async (req, res) => {
  * a user sends a message. We receive that message and
  * send to DIALOGFLOW.
  */
+//
 app.post('/callback', express.json(), async (req, res) => {
     const { message, bot, channel } = req.body;
+    console.log(message + " bot " + bot + " channel " + channel)
     if (message && bot && channel) {
         /**
          * Get bot id and channel url
