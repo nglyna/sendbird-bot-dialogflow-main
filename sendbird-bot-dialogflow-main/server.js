@@ -4,8 +4,8 @@
  */
 var APP_ID = 'AD791A35-62CA-4E37-A490-79C7368C5D77';
 var USER_ID = '840724';
-var TOKEN = 'eb55f1c4e4118a422644b97f0e62ba1f39014649';
-var ENTRYPOINT = 'https://api-AD791A35-62CA-4E37-A490-79C7368C5D77.sendbird.com';
+const TOKEN = 'eb55f1c4e4118a422644b97f0e62ba1f39014649';
+const ENTRYPOINT = 'https://api-AD791A35-62CA-4E37-A490-79C7368C5D77.sendbird.com/v3/bots';
 
 
 /**
@@ -73,6 +73,8 @@ app.get('/bots', async (req, res) => {
             const bots = await getBotList();
             res.status(200).json(bots);
         } else {
+            const bots = await getBotList();
+            res.status(200).json(bots);
             res.send('Unable to connect to Sendbird.');
         }
     })
@@ -127,7 +129,7 @@ app.put('/bots/:id', async (req, res) => {
             const response = await updateBot(req.params.id, body);
             res.status(200).json(response);
         } else {
-            res.send('Unable to connect to Sendbird.');
+            res.send(`Unable to connect to Sendbird. ${connected}`);
         }
     })
 });
@@ -188,16 +190,17 @@ app.post('/callback', express.json(), async (req, res) => {
     }
 });
 
-app.listen(5500, () => console.log('Sendbid DialogFlow BOT listening on port 5500!'));
+app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port http://localhost:${5500}`));
 
 /**
  * HELPER FUNCTIONS
  */
+var passwords = "c9dc3fb9c054132b501fd85c757416ba01620f60";
 function init(callback) {
-    sb = new SendBird({appId: APP_ID});
-    sb.connect(USER_ID, function(user, error) {
+    sb = new SendBird({appId: APP_ID, localCacheEnabled: true});
+    sb.connect(USER_ID, passwords, function(user, error) {
         if (error) {
-            console.log('Error connecting to sendbird'); 
+            console.log(`Error connecting to sendbird // ${user} and ${error}`); 
             callback(false);
         } else {
             console.log('You are connected now');
