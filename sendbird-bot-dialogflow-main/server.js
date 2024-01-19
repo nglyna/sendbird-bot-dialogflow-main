@@ -155,9 +155,14 @@ app.get('/bots/:channel_url/:bot_id', async (req, res) => {
  * send to DIALOGFLOW.
  */
 //
+
 app.post('/callback', express.json(), async (req, res) => {
     const { message, bot, channel } = req.body;
-    console.log(message + " bot " + bot + " channel " + channel)
+    // let obj = JSON.parse(req.body);
+    console.log("message", message + " bot " + bot + " channel " + channel)
+    console.log('Request ody', req.body);
+    // console.log('1', req.body.bot.bot_userid);
+
     if (message && bot && channel) {
         /**
          * Get bot id and channel url
@@ -186,8 +191,11 @@ app.post('/callback', express.json(), async (req, res) => {
             });        
         });
     } else {
+        
         res.status(200).json({
+            
             message: 'Wrong format'
+           
         });
     }
 });
