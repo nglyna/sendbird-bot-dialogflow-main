@@ -219,20 +219,17 @@ app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port htt
 //     });
 // }
 
+// Create the channel
 sb = new SendBird({appId: APP_ID});
-async function creategroupchannel()
-{
-    const params = {
-        invitedUserIds: ['939665'],
-        name: "hi",
-        channelUrl:"hitwofourfive",
-        coverUrl: '',
-        operatorUserIds: ['840724'],
-        data: '',
-        customType:'',
-        isDistinct: false,
-        isPublic: true,
-    };
+sb.connect(USER_ID, function(user, error) {
+    async function creategroupchannel()
+    {
+    const params = new sb.GroupChannelParams();
+    //params.isPublic = true; // or true, depending on the type of group channel you want to create
+    params.isDistinct = false;
+    params.name = "Test Channel";
+    params.operatorUserIds = ['840724'];
+
     try {
         const channel = await sb.GroupChannel.createChannel(params);
         console.log('Group Channel Created:', channel);
@@ -240,12 +237,8 @@ async function creategroupchannel()
         console.error('Error creating group channel:', error);
     }
 }
-creategroupchannel();
-// sb.GroupChannel.createChannel(params,function(openChannel, error) {
-//     if (error) {
-//         return;
-//     }
-// });
+creategroupchannel()
+})
 
 // For user to send message without logging in
     // OpenChannel_Url ="bot-channel-url";
