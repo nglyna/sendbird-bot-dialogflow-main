@@ -202,135 +202,100 @@ app.post('/callback', express.json(), async (req, res) => {
 
 app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port http://localhost:${5500}`));
 
+function main ()
+{    
+    //ask user for user id
+    userid="chicken";
+    //login user
+    connecttoSB(userid);
+
+    //if user click on new chat 
+    firstmessage()
+}
+
+async function firstmessage()
+{
+
+    channel = await creategroupchannel();
+    channelurl = channel.url;
+    // Message to sent probaly need aync for function to get the string
+    var message="test work";
+    await sentmessage(channelurl,message)
+}
+
+
+
+
+
+///code where it runs
+main();
+
+
 /**
  * HELPER FUNCTIONS
  */
-// var passwords = "c9dc3fb9c054132b501fd85c757416ba01620f60";
-// function init(callback) {
-//     sb = new SendBird({appId: APP_ID, localCacheEnabled: true});
-//     sb.connect(USER_ID, passwords, function(user, error) {
-//         if (error) {
-//             console.log(`Error connecting to sendbird // ${user} and ${error}`); 
-//             callback(false);
-//         } else {
-//             console.log('You are connected now');
-//             callback(true);
-//         }
-//     });
-// }
-
-
-var url = ''
-// Create the channel
-function loginuser(){
+function connecttoSB(userid){
 sb = new SendBird({appId: APP_ID});
-sb.connect(USER_ID)
+sb.connect(userid);
 }
-//sb.connect(USER_ID, function(user, error) {
-//     async function creategroupchannel()
-//     {
-//     const params = new sb.GroupChannelParams();
-//     //params.isPublic = true; // or true, depending on the type of group channel you want to create
-//     params.isDistinct = false;
-//     params.name = "Tests Channel";
-//     params.operatorUserIds = ['840724'];
-
-//     try {
-//         const channel = await sb.GroupChannel.createChannel(params);
-//         console.log('Group Channel Created:', channel.url);
-//         return channel.url;
-//     } catch (error) {
-//         console.error('Error creating group channel:', error);
-//     }
-// }
-// async function caller()
-// {
-//     url = await creategroupchannel();
-//     console.log("URL:", url)
-// }
-// caller();
-let chatobj = [];
-let channelurl=[];
-var channelobj;
-//create and enter chat
 
 async function creategroupchannel()
     {
-    var params = new sb.GroupChannelParams();
+    const params = new sb.GroupChannelParams();
     //params.isPublic = true; // or true, depending on the type of group channel you want to create
     params.isDistinct = false;
-    params.name = "Tests Channel";
+    params.name = "Test Channel";
     params.operatorUserIds = ['840724'];
-    var channelurl="wrong";
-    try {
-        var channel = await sb.GroupChannel.createChannel(params);
-        console.log('Group Channel Created:', channel.url);
-        channelurl = channel.url;
-        console.log(`askdfjalskdjfla ${channelurl}`)
-        //return channel.url;
-    } catch (error) {
-        console.error('Error creating group channel:', error);
-    }
-    newchannel= sb.GroupChannel.getChannel(channelurl);
-    
-    //await newchannel.enter();
-    newchannel.sendUserMessage("why why why");
 
+
+        var channel = await sb.GroupChannel.createChannel(params);
+        console.log(`this is the URL `+channel.url);
+        return channel;
+        //console.log('Group Channel Created:', channel);
+    }
+    
+async function sentmessage(channelurl,MESSAGE)
+{
+    await sb.GroupChannel.getChannel(channelurl, function(groupChannel,error)
+    {
+        
+        groupChannel.sendUserMessage(MESSAGE,function(res,error){});
+    });
 }
 
-function usermessage(channelurl,message,channelobj)
+function getallchannels()
 {
-    var channel
-    for (let i = 0; i < chatobj.length; i++) {
-        if (channelurl == chatobj[i].url)
-        {
-            channel= chatobj[i].openChannel
-            break;
-        }
-    }
-    channelobj.sendUserMessage(message);
-};
+    
+}
 
-loginuser();
-creategroupchannel();
-channeltest=channelurl[0];  
-//usermessage(channeltest,"hate much hate",channelobj);
+//For user to send message without logging in
+    // OpenChannel_Url ="sendbird_group_channel_414272739_cf8c6c1a5a876e3b13ac6c510079a2bcd860d23a";
+    // console.log(OpenChannel_Url)
+    // sb = new SendBird({appId: APP_ID});
+    // USER_ID="chicken";
+    // sb.connect(USER_ID, function(user, error) {
+    //     if (error) {
+    //         console.log(`Error connecting to sendbird // ${user} and ${error}`); 
+    //     }
+    //     // Enter the channel
+    //     // sb.GroupChannel.getChannel(OpenChannel_Url, function(openChannel, error) {
+    //     // if (error) {
 
-// //For user to send message without logging in
-//     GroupChannel_Url=caller();
-//     sb = new SendBird({appId: APP_ID});
-//     sb.connect(USER_ID, function(user, error) {
-//         if (error) {
-//             console.log(`Error connecting to sendbird // ${user} and ${error}`); 
-//         }
-//         // Enter the channel
-//         sb.GroupChannel.getChannel(GroupChannel_Url, function(openChannel, error) {
-        // if (error) {
-        //     console.log(`Group: ${GroupChannel_Url}`)
-        //     console.log(`error: ${error}`)
-        //     return;
-        // }
+    //     //     console.log(`error: ${error}`)
+    //     //     return;
+    //     // }
+        
+    //     sb.GroupChannel.getChannel(OpenChannel_Url, function(groupChannel,error)
+    //     {
+    //         var MESSAGE = 'Hi, how are you?';
+    //         groupChannel.sendUserMessage(MESSAGE,function(res,error){});
+    //     });
 
-//         openChannel.enter(function(response, error) {
-//             console.log("hi")
-//             if (error) {
-//                 return;
-//             }
-//         })
-//         //send message
-//         var MESSAGE = 'Hi, how are you?'
-//         openChannel.sendUserMessage(MESSAGE, function(message, error) {
-//             console.log("hi")
-//             if (error) {
-//                 console.log(`error ${error}`)
-//                 return;
-//             }
-//             console.log('Message sent:', message.message);
-//         });
+    //     //send message
 
-//     });
-//     });
 
+    // });
+// });
 
 
 
