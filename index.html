@@ -31,6 +31,22 @@ https://www.tooplate.com/view/2095-level
 </head>
 
     <body>
+        <button class="chat-button" onclick="toggleChat()">
+            <img src="img/chatlogo.png " alt="Chat Icon" style="height:50px; width:55px;">
+        </button>
+    
+        <div class="chat-container" id="chatContainer">
+            <button class="close-button"  onclick="toggleChat()">x</button>
+            <div class="chat-header">Chatbot</div>
+            <div class="chat-messages">
+                <div class="message bot-message">Hello! How can I help you today?</div>
+            </div>
+            <div class="input-container">
+                <input type="text" class="message-input" placeholder="Type your message...">
+                <button class="send-button">Send</button>
+            </div>
+        </div>
+    
         <div class="tm-main-content" id="top">
             <div class="tm-top-bar-bg"></div>
             <div class="tm-top-bar" id="tm-top-bar">
@@ -536,8 +552,109 @@ https://www.tooplate.com/view/2095-level
                 // Update the current year in copyright
                 $('.tm-current-year').text(new Date().getFullYear());                           
             });
-
+            function toggleChat() {
+            var chatContainer = document.getElementById('chatContainer');
+            chatContainer.style.display = (chatContainer.style.display === 'none' || chatContainer.style.display === '') ? 'block' : 'none';
+        }
         </script>             
+<style>
 
+.chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #e11a27;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            
+        }
+        
+        .chat-container {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            max-width: 400px;
+            margin: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .chat-header {
+            background-color: #e11a27;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            color: #e11a27;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            background-color: #e1f7d5;
+            border-radius: 8px;
+            padding: 8px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .bot-message {
+            background-color: #f2f2f2;
+            border-radius: 8px;
+            padding: 8px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .input-container {
+            display: flex;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .send-button {
+            background-color: #e11a27;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px; 
+            cursor: pointer;
+        }
+    </style>
 </body>
 </html>

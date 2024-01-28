@@ -27,8 +27,8 @@ a:focus {
 .tm-margin-b-20 { margin-bottom: 20px; }
 .tm-p-4 { padding: 2rem!important; }
 .tm-color-white { color: white; }
-.tm-color-primary {	color: #ee5057; }
-.tm-bg-primary { background: #ee5057; }
+.tm-color-primary {	color: #e11a27; }
+.tm-bg-primary { background: #e11a27; }
 .tm-bg-gray { background: #F4F4F4; }
 .tm-bg-white { background: white; }
 .tm-bg-dark-blue { background: #1f3646; }
@@ -48,7 +48,7 @@ a:focus {
 
 a.tm-color-primary:hover,
 a.tm-color-primary:active {
-	color: #d53239;
+	color: #e11a27;
 }
 
 .tm-font-light { font-weight: 300; }
@@ -76,7 +76,7 @@ p {
 }
 
 .navbar-toggler { 
-	border-color: rgb(238, 80, 87); 
+	border-color: #e11a27; 
 	cursor: pointer;
 }
 
@@ -96,7 +96,7 @@ p {
 .nav-link.active,
 .nav-link:hover {
 	color: white;
-	background: #ee5057;	
+	background: #e11a27;	
 }
 
 .tm-top-bar .navbar-expand-lg .navbar-nav .nav-link { padding: 50px 35px; }
@@ -171,13 +171,13 @@ p {
 }
 
 .form-control:focus {
-	border-color: #ee5057;
+	border-color: #e11a27;
 	box-shadow: 0 0 0 0.2rem rgba(238,80,87,.25);
 }
 
 .btn-primary {
-	background-color: #ee5057;
-	border-color: #ee5057;
+	background-color: #e11a27;
+	border-color: #e11a27;
 	border-radius: 0;
 	cursor: pointer;
 	font-size: 0.7rem;
@@ -189,8 +189,8 @@ p {
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
-	background-color: #d53239;
-	border-color: #d53239;
+	background-color: #e11a27;
+	border-color: #e11a27;
 }
 
 .tm-search-form .tm-form-element { padding: 0 5px; }
@@ -198,7 +198,7 @@ p {
 .tm-form-element:last-child { margin-right: 0; }
 
 .tm-form-element-icon {
-	color: #ee5057;
+	color: #e11a27;
 	position: absolute;
 	top: 10px;
 	left: 15px;
@@ -284,7 +284,7 @@ select.tm-select::-ms-expand { display: none; }
 
 .tm-btn-white-bordered:hover,
 .tm-btn-white-bordered:focus {
-	color: #ee5057;
+	color: #e11a27;
 	background: white;	
 }
 
@@ -344,7 +344,7 @@ select.tm-select::-ms-expand { display: none; }
 	transition: all 0.3s ease;
 }
 
-.tm-recommended-item:hover h4 { color: #ee5057; }
+.tm-recommended-item:hover h4 { color: #e11a27; }
 .tm-media { align-items: stretch; }
 
 .tm-media,
