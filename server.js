@@ -219,61 +219,117 @@ app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port htt
 //     });
 // }
 
+
+var url = ''
 // Create the channel
+function loginuser(){
 sb = new SendBird({appId: APP_ID});
-sb.connect(USER_ID, function(user, error) {
-    async function creategroupchannel()
+sb.connect(USER_ID)
+}
+//sb.connect(USER_ID, function(user, error) {
+//     async function creategroupchannel()
+//     {
+//     const params = new sb.GroupChannelParams();
+//     //params.isPublic = true; // or true, depending on the type of group channel you want to create
+//     params.isDistinct = false;
+//     params.name = "Tests Channel";
+//     params.operatorUserIds = ['840724'];
+
+//     try {
+//         const channel = await sb.GroupChannel.createChannel(params);
+//         console.log('Group Channel Created:', channel.url);
+//         return channel.url;
+//     } catch (error) {
+//         console.error('Error creating group channel:', error);
+//     }
+// }
+// async function caller()
+// {
+//     url = await creategroupchannel();
+//     console.log("URL:", url)
+// }
+// caller();
+let chatobj = [];
+let channelurl=[];
+var channelobj;
+//create and enter chat
+
+async function creategroupchannel()
     {
-    const params = new sb.GroupChannelParams();
+    var params = new sb.GroupChannelParams();
     //params.isPublic = true; // or true, depending on the type of group channel you want to create
     params.isDistinct = false;
-    params.name = "Test Channel";
+    params.name = "Tests Channel";
     params.operatorUserIds = ['840724'];
-
+    var channelurl="wrong";
     try {
-        const channel = await sb.GroupChannel.createChannel(params);
-        console.log('Group Channel Created:', channel);
+        var channel = await sb.GroupChannel.createChannel(params);
+        console.log('Group Channel Created:', channel.url);
+        channelurl = channel.url;
+        console.log(`askdfjalskdjfla ${channelurl}`)
+        //return channel.url;
     } catch (error) {
         console.error('Error creating group channel:', error);
     }
+    newchannel= sb.GroupChannel.getChannel(channelurl);
+    
+    //await newchannel.enter();
+    newchannel.sendUserMessage("why why why");
+
 }
-creategroupchannel()
-})
 
-// For user to send message without logging in
-    // OpenChannel_Url ="bot-channel-url";
-    // sb = new SendBird({appId: APP_ID});
-    // sb.connect(USER_ID, function(user, error) {
-    //     if (error) {
-    //         console.log(`Error connecting to sendbird // ${user} and ${error}`); 
-    //     }
-    //     // Enter the channel
-    //     sb.GroupChannel.getChannel(OpenChannel_Url, function(openChannel, error) {
-    //     if (error) {
+function usermessage(channelurl,message,channelobj)
+{
+    var channel
+    for (let i = 0; i < chatobj.length; i++) {
+        if (channelurl == chatobj[i].url)
+        {
+            channel= chatobj[i].openChannel
+            break;
+        }
+    }
+    channelobj.sendUserMessage(message);
+};
 
-    //         console.log(`error: ${error}`)
-    //         return;
-    //     }
+loginuser();
+creategroupchannel();
+channeltest=channelurl[0];  
+//usermessage(channeltest,"hate much hate",channelobj);
 
-    //     openChannel.enter(function(response, error) {
-    //         console.log("hi")
-    //         if (error) {
-    //             return;
-    //         }
-    //     })
-    //     //send message
-    //     var MESSAGE = 'Hi, how are you?'
-    //     openChannel.sendUserMessage(MESSAGE, function(message, error) {
-    //         console.log("hi")
-    //         if (error) {
-    //             console.log(`error ${error}`)
-    //             return;
-    //         }
-    //         console.log('Message sent:', message.message);
-    //     });
+// //For user to send message without logging in
+//     GroupChannel_Url=caller();
+//     sb = new SendBird({appId: APP_ID});
+//     sb.connect(USER_ID, function(user, error) {
+//         if (error) {
+//             console.log(`Error connecting to sendbird // ${user} and ${error}`); 
+//         }
+//         // Enter the channel
+//         sb.GroupChannel.getChannel(GroupChannel_Url, function(openChannel, error) {
+        // if (error) {
+        //     console.log(`Group: ${GroupChannel_Url}`)
+        //     console.log(`error: ${error}`)
+        //     return;
+        // }
 
-    // });
-    // });
+//         openChannel.enter(function(response, error) {
+//             console.log("hi")
+//             if (error) {
+//                 return;
+//             }
+//         })
+//         //send message
+//         var MESSAGE = 'Hi, how are you?'
+//         openChannel.sendUserMessage(MESSAGE, function(message, error) {
+//             console.log("hi")
+//             if (error) {
+//                 console.log(`error ${error}`)
+//                 return;
+//             }
+//             console.log('Message sent:', message.message);
+//         });
+
+//     });
+//     });
 
 
 
