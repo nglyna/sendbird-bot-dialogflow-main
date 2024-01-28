@@ -7,6 +7,7 @@ var USER_ID = 'PFD';
 const TOKEN = 'eb55f1c4e4118a422644b97f0e62ba1f39014649';
 const ENTRYPOINT = 'https://api-AD791A35-62CA-4E37-A490-79C7368C5D77.sendbird.com/v3/bots';
 
+const Possible ="http://localhost:5500/bots"
 
 /**
  * DIALOGFLOW CONFIGURATION
@@ -202,21 +203,29 @@ app.post('/callback', express.json(), async (req, res) => {
 
 app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port http://localhost:${5500}`));
 
+
+
+var user;
 function main ()
 {    
+    
     //ask user for user id
     userid="chicken";
     //login user
     connecttoSB(userid);
 
+//exported the channel url not the messages yet:
+
+    getallchannels(userid);
     //if user click on new chat 
-    firstmessage()
+    //firstmessage(userid);
+    //add the bot in 
 }
 
-async function firstmessage()
+async function firstmessage(userid)
 {
 
-    channel = await creategroupchannel();
+    channel = await creategroupchannel(userid);
     channelurl = channel.url;
     // Message to sent probaly need aync for function to get the string
     var message="test work";
@@ -234,18 +243,20 @@ main();
 /**
  * HELPER FUNCTIONS
  */
-function connecttoSB(userid){
+async function connecttoSB(userid){
 sb = new SendBird({appId: APP_ID});
-sb.connect(userid);
+await sb.connect(userid);
+console.log(sb.currentUser);
+return sb.currentUser;
 }
 
-async function creategroupchannel()
+async function creategroupchannel(userid)
     {
     const params = new sb.GroupChannelParams();
     //params.isPublic = true; // or true, depending on the type of group channel you want to create
     params.isDistinct = false;
-    params.name = "Test Channel";
-    params.operatorUserIds = ['840724'];
+    params.name = "New Chat";
+    params.operatorUserIds = ['840724',userid];
 
 
         var channel = await sb.GroupChannel.createChannel(params);
@@ -263,9 +274,46 @@ async function sentmessage(channelurl,MESSAGE)
     });
 }
 
-function getallchannels()
+async function getallchannels(user)
 {
-    
+    //console.log("work");
+    var connecteduser = await connecttoSB(user);
+
+
+    var grouplist= await sb.GroupChannel.createMyGroupChannelListQuery();
+    grouplist.includeEmpty = true;
+    grouplist.memberStateFilter = 'all';    // Acceptable values include "all", "joined_only", and "invited_only."
+    grouplist.order = 'latest_last_message';    // Acceptable values include "chronological", "latest_last_message", "channel_name_alphabetical", and "metadata_value_alphabetical."
+    grouplist.limit = 15;   // The value of pagination limit could be set up to 100.
+    const arr = await new Promise((resolve, reject) => {
+    if (grouplist.hasNext) {
+        grouplist.next(function(groupChannels, error) {
+            if (error) {
+                // Handle error.
+            }
+            console.log(connecteduser.userId  +` hele`)
+            console.log(groupChannels)
+            // A list of group channels is successfully retrieved.
+            // Through the groupChannels parameter of the callback function,
+            // you can access the data of each group channel from the result list that Sendbird server has passed to the callback function.
+            var i=1;
+            var channelarr = []
+            groupChannels.forEach(channel => {
+                console.log(`channel which ${i} : ${channel.url}`);
+                channelarr.push(channel.url)
+                i++;
+            });
+            resolve(channelarr);
+           
+        });
+    }
+    else 
+    {
+        resolve([]);
+    }
+    });
+    console.log(arr[1])
+    return arr
 }
 
 //For user to send message without logging in
