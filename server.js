@@ -245,9 +245,9 @@ async function firstmessage(userid)
         /**
          * Respond HTTP OK (200)
          */
-        res.status(200).json({
-            message: 'Response from DialogFlow: ' + response
-        });        
+        // res.status(200).json({
+        //     message: 'Response from DialogFlow: ' + response
+        // });        
     });
 }
 
@@ -276,7 +276,7 @@ async function creategroupchannel(userid)
     {
     const params = new sb.GroupChannelParams();
     //params.isPublic = true; // or true, depending on the type of group channel you want to create
-    params.isDistinct = false;
+    params.isDistinct = false; //change to true 
     params.name = "New Chat";
     params.operatorUserIds = ['840724',userid];
 
