@@ -3,7 +3,8 @@
  * Enter your Sendbird information
  */
 var APP_ID = 'AD791A35-62CA-4E37-A490-79C7368C5D77';
-var USER_ID = 'bot1';
+//var USER_ID = 'bot1';
+var BOT_ID = 'bot1';
 const TOKEN = 'eb55f1c4e4118a422644b97f0e62ba1f39014649';
 const ENTRYPOINT = 'https://api-AD791A35-62CA-4E37-A490-79C7368C5D77.sendbird.com/v3/bots';
 
@@ -39,6 +40,7 @@ const bodyParser = require("body-parser");
  * Use AXIOS for sending and receiving HTTP requests
  */
 const axios = require('axios');
+const http = require('http');
 
 /**
  * Install Sendbird
@@ -220,17 +222,33 @@ function main ()
     getallchannels(userid);
     //if user click on new chat 
     firstmessage(userid);
-    //add the bot in 
+
 }
 
 async function firstmessage(userid)
 {
-
     channel = await creategroupchannel(userid);
     channelurl = channel.url;
+    //add the bot in 
+    console.log(`bot = ${BOT_ID} channelurl = ${channelurl}`)
+    addBotToChannel(BOT_ID,channelurl);
     // Message to sent probaly need aync for function to get the string
-    var message="test work";
-    await sentmessage(channelurl,message)
+    var message="hi";
+    await sentmessage(channelurl,message);
+    
+    sendToDialogFlow(message, async (response) => {
+        console.log('Response from DF: ' + response);
+        /**
+         * Lastly, send Dialogflow response to chat using our Bot
+         */
+        await fromDialogFlowSendMessageToChannel(response, channelurl, BOT_ID);
+        /**
+         * Respond HTTP OK (200)
+         */
+        res.status(200).json({
+            message: 'Response from DialogFlow: ' + response
+        });        
+    });
 }
 
 
@@ -298,15 +316,16 @@ async function getallchannels(user)
             if (error) {
                 // Handle error.
             }
-            console.log(connecteduser.userId  +` hele`)
-            console.log(groupChannels)
+            //console.log(connecteduser.userId  +` hele`)
+            //console.log(groupChannels)
+            
             // A list of group channels is successfully retrieved.
             // Through the groupChannels parameter of the callback function,
             // you can access the data of each group channel from the result list that Sendbird server has passed to the callback function.
             var i=1;
             var channelarr = []
             groupChannels.forEach(channel => {
-                console.log(`channel which ${i} : ${channel.url}`);
+                //console.log(`channel which ${i} : ${channel.url}`);
                 channelarr.push(channel.url)
                 i++;
             });
@@ -319,10 +338,24 @@ async function getallchannels(user)
         resolve([]);
     }
     });
-    console.log(arr[1])
+    //console.log(arr[1])
     return arr
 }
 
+//lyna codes
+async function addBotToChannel(botId, channelUrl) {
+    const params = {
+        'channel_urls': [ channelUrl ]
+    };
+    const response = await axios.post(ENTRYPOINT + '/' + botId + '/channels', params, {
+        headers: { 
+            "Api-Token": TOKEN,
+            'Content-Type': 'application/json'            
+        },
+    });
+    const data = response.data;
+    return data;
+}
 //For user to send message without logging in
     // OpenChannel_Url ="sendbird_group_channel_414272739_cf8c6c1a5a876e3b13ac6c510079a2bcd860d23a";
     // console.log(OpenChannel_Url)
@@ -387,19 +420,37 @@ async function updateBot(botId, params) {
     return data.bots;
 }
 
-async function addBotToChannel(botId, channelUrl) {
-    const params = {
-        'channel_urls': [ channelUrl ]
-    };
-    const response = await axios.post(ENTRYPOINT + '/' + botId + '/channels', params, {
-        headers: { 
-            "Api-Token": TOKEN,
-            'Content-Type': 'application/json'            
-        },
-    });
-    const data = response.data;
-    return data;
-}
+
+
+// new codes
+// async function addBotToChannel(botId, channelUrl) {
+//     const params = {
+//         'channel_urls': [ channelUrl ]
+//     };
+//     const response = await axios.get(Possible + '/'+channelUrl +'/'+ botId);
+//     console.log(response.data)
+//     return data;
+// }
+
+// function addBotToChannel(botId,channelUrl)
+// {
+//     var url = `http://localhost:5500/bots/${channelUrl}/${botId}`;
+//     http.get(url, (response) => {
+//         let data = '';
+    
+//         // A chunk of data has been received.
+//         response.on('data', (chunk) => {
+//             data += chunk;
+//         });
+    
+//         // The whole response has been received.
+//         response.on('end', () => {
+//             console.log(data);
+//         });
+//     }).on('error', (error) => {
+//         console.error('Error making GET request:', error);
+//     });
+// }
 
 async function fromDialogFlowSendMessageToChannel(queryText, channelUrl, botId) {
     const params = {
