@@ -62,9 +62,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 /**
  * Show welcome screen
  */
-app.get('/', async (req, res) => {
-    res.send(`Welcome to Sendbird `);
-});
+
+// app.get('/', async (req, res) => {
+//     res.send(`Welcome to Sendbird `);
+// });
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'sendbird-bot-dialogflow-main')));
+//app.use(express.static('sendbird-bot-dialogflow-main'));
+
 
 /**
  * Get bot list
@@ -208,22 +213,61 @@ app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port htt
 
 var userid ="anonymous";
 var usertoken = null;
-function main ()
+var password;
+async function main ()
 {    
-    
+    sb = new SendBird({appId: APP_ID});
     //if user log in the userid is not anonymous and usertoken not null
+    userid = '939665';
+    password = "lllll";
+    //getmessages();
+    if (userid !="anonymous"){
+    var data =await fetechtoken(userid);
+    if (data.metadata.Password==password )
+    {
+    usertoken = data.access_token;
+    }
+    else
+    {
+        //userid ="anonymous"
+    }
 
-    //login user
-    connecttoSB(userid);
-
+    console.log(`this is the token : ${usertoken}`);
+    }
+    //login user 
+    //connecttoSB(userid,usertoken);
+    //if create new password
+    //addpassword(password);
 //exported the channel url not the messages yet:
 
 // get the diff group channels in the sb
-    getallchannels(userid);
+    //getallchannels(userid);
     //if user click on new chat 
-    firstmessage(userid);
+    //firstmessage(userid);
 }
-
+async function getmessages()
+{
+    var arry = await getallchannels(userid);
+    channelurl = arry[0];
+    console.log(`thsi is url: `+channelurl)
+    channel = await sb.GroupChannel.getChannel(channelurl)
+    const params = new sb.MessageListParams();
+    params.prevResultSize = 30; // Number of messages to retrieve
+    const messages = await channel.getMessagesByTimestamp(0, params);
+    console.log(messages)
+}
+async function addpassword(password)// need to be connected to sb
+{
+    await connecttoSB(userid,usertoken);
+    var data = {Password : `${password}`};
+    console.log(sb.currentUser)
+    try{
+    await sb.currentUser.createMetaData(data);
+    }
+    catch{
+        //await sb.currentUser.updateMetaData(data);
+    }
+}
 async function firstmessage(userid)
 {
     channel = await creategroupchannel(userid);
@@ -262,11 +306,29 @@ main();
  * HELPER FUNCTIONS
  */
 
+async function fetechtoken(userid){
+        var url = `https://api-${APP_ID}.sendbird.com/v3/users/${userid}`;
+        const response = await fetch(url,{method:'GET',headers:{"Api-Token": TOKEN,'Content-Type': 'application/json'}});
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Response data:', data);
+        return data;
+    }
+
+
 //connection to sb
-async function connecttoSB(userid){
-sb = new SendBird({appId: APP_ID});
+async function connecttoSB(userid,Token){
+
 //to use await need use async function
-await sb.connect(userid);
+if (userid !="anonymous" || Token == null)
+{
+    await sb.connect(userid,Token);
+}
+else {
+    await sb.connect(userid);
+}
 console.log(sb.currentUser);
 return sb.currentUser;
 }
@@ -317,10 +379,6 @@ async function getallchannels(user)
             }
             //console.log(connecteduser.userId  +` hele`)
             //console.log(groupChannels)
-            
-            // A list of group channels is successfully retrieved.
-            // Through the groupChannels parameter of the callback function,
-            // you can access the data of each group channel from the result list that Sendbird server has passed to the callback function.
             var i=1;
             var channelarr = []
             groupChannels.forEach(channel => {
