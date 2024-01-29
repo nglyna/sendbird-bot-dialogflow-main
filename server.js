@@ -8,8 +8,7 @@ var BOT_ID = 'bot1';
 const TOKEN = 'eb55f1c4e4118a422644b97f0e62ba1f39014649';
 const ENTRYPOINT = 'https://api-AD791A35-62CA-4E37-A490-79C7368C5D77.sendbird.com/v3/bots';
 
-const Possible ="http://localhost:5500/bots"
-
+const useentrypoint ='https://api-AD791A35-62CA-4E37-A490-79C7368C5D77.sendbird.com/v3/users';
 /**
  * DIALOGFLOW CONFIGURATION
  * 
@@ -207,12 +206,13 @@ app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port htt
 
 
 
-var user;
+var userid ="anonymous";
+var usertoken = null;
 function main ()
 {    
     
-    //ask user for user id
-    userid="chicken";
+    //if user log in the userid is not anonymous and usertoken not null
+
     //login user
     connecttoSB(userid);
 
@@ -222,7 +222,6 @@ function main ()
     getallchannels(userid);
     //if user click on new chat 
     firstmessage(userid);
-
 }
 
 async function firstmessage(userid)
