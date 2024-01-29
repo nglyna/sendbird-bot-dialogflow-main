@@ -3,7 +3,7 @@
  * Enter your Sendbird information
  */
 var APP_ID = 'AD791A35-62CA-4E37-A490-79C7368C5D77';
-var USER_ID = 'PFD';
+var USER_ID = 'bot1';
 const TOKEN = 'eb55f1c4e4118a422644b97f0e62ba1f39014649';
 const ENTRYPOINT = 'https://api-AD791A35-62CA-4E37-A490-79C7368C5D77.sendbird.com/v3/bots';
 
@@ -216,9 +216,10 @@ function main ()
 
 //exported the channel url not the messages yet:
 
+// get the diff group channels in the sb
     getallchannels(userid);
     //if user click on new chat 
-    //firstmessage(userid);
+    firstmessage(userid);
     //add the bot in 
 }
 
@@ -243,8 +244,11 @@ main();
 /**
  * HELPER FUNCTIONS
  */
+
+//connection to sb
 async function connecttoSB(userid){
 sb = new SendBird({appId: APP_ID});
+//to use await need use async function
 await sb.connect(userid);
 console.log(sb.currentUser);
 return sb.currentUser;
@@ -274,17 +278,20 @@ async function sentmessage(channelurl,MESSAGE)
     });
 }
 
+// get channel url that user is in
 async function getallchannels(user)
 {
     //console.log("work");
     var connecteduser = await connecttoSB(user);
 
-
+// get group channel list
     var grouplist= await sb.GroupChannel.createMyGroupChannelListQuery();
+    // if channel is created and is empty then it will be included into the array 
     grouplist.includeEmpty = true;
     grouplist.memberStateFilter = 'all';    // Acceptable values include "all", "joined_only", and "invited_only."
     grouplist.order = 'latest_last_message';    // Acceptable values include "chronological", "latest_last_message", "channel_name_alphabetical", and "metadata_value_alphabetical."
     grouplist.limit = 15;   // The value of pagination limit could be set up to 100.
+    // storing all the information into an array
     const arr = await new Promise((resolve, reject) => {
     if (grouplist.hasNext) {
         grouplist.next(function(groupChannels, error) {
