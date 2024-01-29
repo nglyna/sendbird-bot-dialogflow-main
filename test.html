@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Input Form</title>
+</head>
+<body>
+
+    <h2>Send User Input to Postman</h2>
+
+    <form id="userInputForm">
+        <label for="userInput">Enter User Input:</label>
+        <input type="text" id="userInput" name="userInput" required>
+        <button type="button" onclick="sendToPostman()">Send to Postman</button>
+    </form>
+
+    <script>
+        function sendToPostman() {
+            // Get user input from the form
+            const userInput = document.getElementById('userInput').value;
+
+            // Create a message payload
+            const messagePayload = {
+                message: {
+                    type: 'MESG',
+                    custom_type: 'vote',
+                    files: [],
+                    text: userInput,  // Store user input in the "text" field
+                    data: '',
+                    created_at: ''
+                }
+            };
+
+            // Make an HTTP request using Fetch API
+            fetch('http://localhost:5500/callback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any additional headers required by your API
+                },
+                body: JSON.stringify(messagePayload),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response from Postman API
+                console.log('Response from Postman:', data);
+            })
+            .catch(error => {
+                // Handle errors during the fetch
+                console.error('Error during fetch:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
