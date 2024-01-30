@@ -67,6 +67,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //     res.send(`Welcome to Sendbird `);
 // });
 const path = require('path');
+const { channel } = require('diagnostics_channel');
 app.use(express.static(path.join(__dirname, 'sendbird-bot-dialogflow-main')));
 //app.use(express.static('sendbird-bot-dialogflow-main'));
 
@@ -220,12 +221,12 @@ async function main ()
     //if user log in the userid is not anonymous and usertoken not null
     userid = '939665';
     password = "lllll";
-    //getmessages();
     if (userid !="anonymous"){
     var data =await fetechtoken(userid);
     if (data.metadata.Password==password )
     {
-    usertoken = data.access_token;
+        usertoken = data.access_token;
+            getmessages();
     }
     else
     {
@@ -250,11 +251,29 @@ async function getmessages()
     var arry = await getallchannels(userid);
     channelurl = arry[0];
     console.log(`thsi is url: `+channelurl)
-    channel = await sb.GroupChannel.getChannel(channelurl)
-    const params = new sb.MessageListParams();
-    params.prevResultSize = 30; // Number of messages to retrieve
-    const messages = await channel.getMessagesByTimestamp(0, params);
-    console.log(messages)
+    let channel = await sb.GroupChannel.getChannel(channelurl)
+
+    let listQuery = channel.createPreviousMessageListQuery();
+    listQuery.limit = 30;
+    listQuery.reverse = false;
+    listQuery.includeMetaArray = false;
+    listQuery.includeReaction = true;
+    
+    // This retrieves previous messages in a channel.
+    //limit , reverse , message_Type_Filter
+    allmessage= await listQuery.load((messages, error) => {
+        if (error) {
+            // Handle error.
+            console.log(`error is ${error}`)
+        }
+    
+        for (let i=0;i<messages.length;i++)
+        {
+            console.log(`user : ${messages[i]._sender.userId} , message ${messages[i].message}`)
+        }
+        return messages
+    });
+    return allmessage
 }
 async function addpassword(password)// need to be connected to sb
 {
@@ -361,7 +380,7 @@ async function sentmessage(channelurl,MESSAGE)
 async function getallchannels(user)
 {
     //console.log("work");
-    var connecteduser = await connecttoSB(user);
+    var connecteduser = await connecttoSB(user,usertoken);
 
 // get group channel list
     var grouplist= await sb.GroupChannel.createMyGroupChannelListQuery();
