@@ -70,6 +70,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 const path = require('path');
 const { channel } = require('diagnostics_channel');
 const { error } = require('console');
+const { promises } = require('readline');
 const PORT = process.env.PORT || 3000;
 
 // Serve static files from the root folder
@@ -233,18 +234,24 @@ var usertoken = null;
 var password;
 var message = null;
 var channelusing = null;
+//don call main
 async function main ()
 {    
     sb = new SendBird({appId: APP_ID});
     //if user log in the userid is not anonymous and usertoken not null
-    //userid = '939665';
-    //password = "lllll";
+    userid = '939665';
+    password = "lllll";
     if (userid !="anonymous"){
-    var data =await fetechtoken(userid);
+    var data =await fetechtoken(userid);//password need
     if (data.metadata.Password==password )
     {
         usertoken = data.access_token;
-        getmessages();
+        var messages=await getmessages();
+        //console.log(`${[messages]}`)
+        for (let i=0;i<messages.length;i++)
+        {
+            console.log(`users : ${messages[i]._sender.userId} , message ${messages[i].message}`)
+        }
     }
     else
     {
@@ -260,15 +267,16 @@ async function main ()
 //exported the channel url not the messages yet:
 
 // get the diff group channels in the sb
-    //getallchannels(userid);
+    var channel =await getallchannels(userid);
+
+
     //if user click on new chat 
-    channelusing = await createnewchannel(userid)
-    console.log(channelusing.url)
-    var botmessage= await sendmessage(userid,message,channelusing.url);
-    console.log(`botmessage = ${botmessage}`);
+     channelusing = await createnewchannel(userid)
+    // console.log(channelusing.url)
+     var botmessage= await sendmessage(userid,message,channelusing.url);
+    // console.log(`botmessage = ${botmessage}`);
 
 }
-
 async function getmessages()
 {
     var arry = await getallchannels(userid);
@@ -284,19 +292,21 @@ async function getmessages()
     
     // This retrieves previous messages in a channel.
     //limit , reverse , message_Type_Filter
-    allmessage= await listQuery.load((messages, error) => {
+    var allmessage= await new Promise ((resolve,reject)=>{
+     listQuery.load((messages, error) => {
         if (error) {
             // Handle error.
             console.log(`error is ${error}`)
         }
     
-        for (let i=0;i<messages.length;i++)
-        {
-            console.log(`user : ${messages[i]._sender.userId} , message ${messages[i].message}`)
-        }
-        return messages
+        // for (let i=0;i<messages.length;i++)
+        // {
+        //     console.log(`user : ${messages[i]._sender.userId} , message ${messages[i].message}`)
+        // }
+        resolve(messages);
     });
-    return allmessage
+});
+    return allmessage;
 }
 async function addpassword(password)// need to be connected to sb
 {
@@ -363,8 +373,12 @@ main();
  */
 function disconnectuser()
 {
+    try {
     sb.disconnect();
     sb.disconnectWebSocket();
+    }
+    catch
+    {}
 }
 
 async function fetechtoken(userid){
@@ -374,7 +388,7 @@ async function fetechtoken(userid){
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        //console.log('Response data:', data);
+        console.log('Response data:', data);
         return data;
     }
 
