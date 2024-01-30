@@ -66,10 +66,23 @@ app.use(bodyParser.urlencoded({extended: true}));
 // app.get('/', async (req, res) => {
 //     res.send(`Welcome to Sendbird `);
 // });
+
 const path = require('path');
-const { channel } = require('diagnostics_channel');
-app.use(express.static(path.join(__dirname, 'sendbird-bot-dialogflow-main')));
-//app.use(express.static('sendbird-bot-dialogflow-main'));
+const PORT = process.env.PORT || 3000;
+
+// Serve static files from the root folder
+app.use(express.static(path.join(__dirname)));
+
+// Serve index.html as the home page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
 
 
 /**
