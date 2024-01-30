@@ -268,6 +268,7 @@ async function main ()
     console.log(`botmessage = ${botmessage}`);
 
 }
+
 async function getmessages()
 {
     var arry = await getallchannels(userid);
@@ -360,6 +361,11 @@ main();
 /**
  * HELPER FUNCTIONS
  */
+function disconnectuser()
+{
+    sb.disconnect();
+    sb.disconnectWebSocket();
+}
 
 async function fetechtoken(userid){
         var url = `https://api-${APP_ID}.sendbird.com/v3/users/${userid}`;
