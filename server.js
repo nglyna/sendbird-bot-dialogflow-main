@@ -265,7 +265,7 @@ async function main ()
     channelusing = await createnewchannel(userid)
     console.log(channelusing.url)
     var botmessage= await sendmessage(userid,message,channelusing.url);
-    //console.log(`botmessage = ${botmessage}`)
+    console.log(`botmessage = ${botmessage}`);
 
 }
 async function getmessages()
@@ -335,14 +335,17 @@ async function sendmessage(userid,message,channelurl)
     message="hi";
     await sentmessage(channelurl,message);
     
-    var botmessage= await sendToDialogFlow(message, async (response) => {
-        console.log('Response from DF: ' + response);
-        /**
-         * Lastly, send Dialogflow response to chat using our Bot
-         */
-        await fromDialogFlowSendMessageToChannel(response, channelurl, BOT_ID);
-        return response
+    var botmessage= await new Promise((resolve,reject)=>{
+        sendToDialogFlow(message, async (response) => {
+            console.log('Response from DF: ' + response);
+            /**
+             * Lastly, send Dialogflow response to chat using our Bot
+             */
+            await fromDialogFlowSendMessageToChannel(response, channelurl, BOT_ID);
+            resolve(response);
+        });
     });
+    console.log(botmessage);
     return botmessage;
 }
 
@@ -374,6 +377,7 @@ async function fetechtoken(userid){
 async function connecttoSB(userid,Token){
 
 //to use await need use async function
+//for new users to login and reoccurring users
 if (userid !="anonymous" || Token == null)
 {
     try {
@@ -580,6 +584,7 @@ async function fromDialogFlowSendMessageToChannel(queryText, channelUrl, botId) 
 }
 
 function sendToDialogFlow(message, callback) {
+// function sendToDialogFlow(message) {
     try {
         const queries = [
             message
@@ -587,7 +592,7 @@ function sendToDialogFlow(message, callback) {
         const response = executeQueries(DIALOGFLOW_PROJECT_ID, GOOGLE_SESSION_ID, queries, DIALOGFLOW_LANG, callback);    
         return response;
     } catch (error) {
-        console.log(error)
+        console.log(`${error}`)
     }
 }
 
