@@ -68,6 +68,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 // });
 
 const path = require('path');
+const { channel } = require('diagnostics_channel');
+const { error } = require('console');
 const PORT = process.env.PORT || 3000;
 
 // Serve static files from the root folder
@@ -198,7 +200,7 @@ app.post('/callback', express.json(), async (req, res) => {
         /**
          * Send user message from Sendbird to dialogflow
          */
-        sendToDialogFlow(msgText, async (response) => {
+        let botrespond = await sendToDialogFlow(msgText, async (response) => {
             console.log('Response from DF: ' + response);
             /**
              * Lastly, send Dialogflow response to chat using our Bot
@@ -211,6 +213,7 @@ app.post('/callback', express.json(), async (req, res) => {
                 message: 'Response from DialogFlow: ' + response
             });        
         });
+        //return botrespond;
     } else {
         
         res.status(200).json({
@@ -228,18 +231,20 @@ app.listen(5500, () => console.log(`Sendbid DialogFlow BOT listening on port htt
 var userid ="anonymous";
 var usertoken = null;
 var password;
+var message = null;
+var channelusing = null;
 async function main ()
 {    
     sb = new SendBird({appId: APP_ID});
     //if user log in the userid is not anonymous and usertoken not null
-    userid = '939665';
-    password = "lllll";
+    //userid = '939665';
+    //password = "lllll";
     if (userid !="anonymous"){
     var data =await fetechtoken(userid);
     if (data.metadata.Password==password )
     {
         usertoken = data.access_token;
-            getmessages();
+        getmessages();
     }
     else
     {
@@ -257,7 +262,11 @@ async function main ()
 // get the diff group channels in the sb
     //getallchannels(userid);
     //if user click on new chat 
-    //firstmessage(userid);
+    channelusing = await createnewchannel(userid)
+    console.log(channelusing.url)
+    var botmessage= await sendmessage(userid,message,channelusing.url);
+    //console.log(`botmessage = ${botmessage}`)
+
 }
 async function getmessages()
 {
@@ -300,30 +309,41 @@ async function addpassword(password)// need to be connected to sb
         //await sb.currentUser.updateMetaData(data);
     }
 }
-async function firstmessage(userid)
+async function createnewchannel(userid)
 {
-    channel = await creategroupchannel(userid);
+    try {
+    var channel = await creategroupchannel(userid);
     channelurl = channel.url;
     //add the bot in 
     console.log(`bot = ${BOT_ID} channelurl = ${channelurl}`)
     addBotToChannel(BOT_ID,channelurl);
-    // Message to sent probaly need aync for function to get the string
-    var message="hi";
+    return channel;
+    }
+    catch
+    {
+        connecttoSB(userid,usertoken);
+        var channel = await creategroupchannel(userid);
+        channelurl = channel.url;
+        //add the bot in 
+        console.log(`bot = ${BOT_ID} channelurl = ${channelurl}`)
+        addBotToChannel(BOT_ID,channelurl);
+        return channel;
+    }
+}
+async function sendmessage(userid,message,channelurl)
+{    // Message to sent probaly need aync for function to get the string
+    message="hi";
     await sentmessage(channelurl,message);
     
-    sendToDialogFlow(message, async (response) => {
+    var botmessage= await sendToDialogFlow(message, async (response) => {
         console.log('Response from DF: ' + response);
         /**
          * Lastly, send Dialogflow response to chat using our Bot
          */
         await fromDialogFlowSendMessageToChannel(response, channelurl, BOT_ID);
-        /**
-         * Respond HTTP OK (200)
-         */
-        // res.status(200).json({
-        //     message: 'Response from DialogFlow: ' + response
-        // });        
+        return response
     });
+    return botmessage;
 }
 
 
@@ -345,7 +365,7 @@ async function fetechtoken(userid){
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Response data:', data);
+        //console.log('Response data:', data);
         return data;
     }
 
@@ -356,12 +376,17 @@ async function connecttoSB(userid,Token){
 //to use await need use async function
 if (userid !="anonymous" || Token == null)
 {
+    try {
     await sb.connect(userid,Token);
+    }
+    catch{
+    await sb.connect(userid);
+    }
 }
 else {
     await sb.connect(userid);
 }
-console.log(sb.currentUser);
+//console.log(sb.currentUser);
 return sb.currentUser;
 }
 
