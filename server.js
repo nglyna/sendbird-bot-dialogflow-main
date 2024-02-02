@@ -31,8 +31,7 @@ var sb;
  * Include EXPRESS framework 
  * and body parser
  */
-// const express = require('express');
-import express from 'express';
+const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
 
