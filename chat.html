@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        
+        <div class="chat-container" id="chatContainer">
+            <button class="close-button" onclick="toggleChat()">x</button>
+            <div class="chat-header">Chatbot</div>
+            <div class="chat-messages">
+                <button class="new-conversation-button" onclick="startNewConversation()">+</button>
+                <span class="new-conversation-text">Start a new conversation</span>
+                
+                <!-- Messages will appear here -->
+            </div>
+            <div class="input-container">
+                <input type="text" class="message-input" placeholder="Type your message...">
+                <button class="send-button" id="sendmessage">Send</button>
+            </div>
+        </div>
+    </body>
+    </html>
+
+    <script>
+        function toggleChat() {
+    var chatContainer = document.getElementById("chatContainer");
+    chatContainer.classList.toggle("chat-open");
+}
+document.querySelector(".close-button").addEventListener("click", toggleChat);
+document.querySelector(".new-conversation-button").addEventListener("click", startNewConversation);
+        function startNewConversation() {
+    // You can perform any actions here to reset the chat, clear messages, etc.
+    // For now, let's just display a message in the chat messages area.
+    var chatMessages = document.querySelector(".chat-messages");
+    chatMessages.innerHTML = ""; // Clear existing messages
+    var newMessage = document.createElement("div");
+    newMessage.className = "message bot-message";
+    newMessage.textContent = "New conversation started!";
+    
+    var newMessage2 = document.createElement("div");
+    newMessage2.className = "message bot-message";
+    newMessage2.textContent = "Hello, I am your Personal Banker. How can I help you today?";
+
+    chatMessages.appendChild(newMessage);
+    chatMessages.appendChild(newMessage2);
+
+}
+    </script>

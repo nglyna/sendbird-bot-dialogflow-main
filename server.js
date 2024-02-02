@@ -31,8 +31,10 @@ var sb;
  * Include EXPRESS framework 
  * and body parser
  */
-const express = require('express');
+// const express = require('express');
+import express from 'express';
 const app = express();
+// const bodyParser = require("body-parser");
 const bodyParser = require("body-parser");
 
 /**
@@ -45,7 +47,7 @@ const http = require('http');
  * Install Sendbird
  */
 const SendBird = require('sendbird');
-
+sb = new SendBird({appId: APP_ID});
 /**
  * Install DialogFlow API
  */
@@ -78,7 +80,7 @@ app.use(express.static(path.join(__dirname)));
 
 // Serve index.html as the home page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 // Start the server
@@ -392,12 +394,21 @@ async function fetechtoken(userid){
         return data;
     }
 
-
+sb = new SendBird({appId: APP_ID});
 //connection to sb
 async function connecttoSB(userid,Token){
-
+   
+    try{
+        Token = await fetechtoken(userid)
+        Token = Token.access_token;
+    }
+    catch{
+        Token = null;
+    }
+   
 //to use await need use async function
 //for new users to login and reoccurring users
+console.log(`${userid} token: ${Token}`)
 if (userid !="anonymous" || Token == null)
 {
     try {
