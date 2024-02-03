@@ -45,7 +45,7 @@ const http = require('http');
  * Install Sendbird
  */
 const SendBird = require('sendbird');
-
+sb = new SendBird({appId: APP_ID});
 /**
  * Install DialogFlow API
  */
@@ -78,10 +78,11 @@ app.use(express.static(path.join(__dirname)));
 
 // Serve index.html as the home page
 app.get('/', (req, res) => {
+    // res.sendFile(path.join(__dirname, 'index.html'));
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start the server
+// Start the server for the html to run
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
@@ -94,9 +95,11 @@ app.listen(PORT, () => {
 app.get('/bots', async (req, res) => {
     init( async (connected) => {
         if (connected) {
+            //wait for the response for the bot lists
             const bots = await getBotList();
             res.status(200).json(bots);
         } else {
+            // if not connected to sendbird 
             const bots = await getBotList();
             res.status(200).json(bots);
             res.send('Unable to connect to Sendbird.');
@@ -118,6 +121,7 @@ app.get('/bots', async (req, res) => {
  *   "is_privacy_mode": false
  * }
  */
+
 app.post('/bots', async (req, res) => {
     const body = req.body;
     if (!body.is_privacy_mode) {
@@ -285,6 +289,7 @@ async function main ()
 }
 async function getmessages()
 {
+    //get channel url
     var arry = await getallchannels(userid);
     channelurl = arry[0];
     console.log(`thsi is url: `+channelurl)
@@ -398,10 +403,18 @@ async function fetechtoken(userid){
         return data;
     }
 
-
 //connection to sb
 async function connecttoSB(userid,Token){
-
+    sb = new SendBird({appId: APP_ID});
+    try{
+        Token = await fetechtoken(userid)
+        Token = Token.access_token;
+    }
+    catch{
+        Token = null;
+    }
+    console.log(`Token:${Token}, Userid:${userid}`)
+    console.log(sb)
 //to use await need use async function
 //for new users to login and reoccurring users
 if (userid !="anonymous" || Token == null)
@@ -419,6 +432,26 @@ else {
 //console.log(sb.currentUser);
 return sb.currentUser;
 }
+
+//run the function in html when click on submit button
+// document.addEventListener('DOMContentLoaded', () => {
+//     const connectButton = document.getElementsByClassName('submit-button');
+
+//     connectButton.addEventListener('click', async () => {
+//         // retrieve user input for userid variable
+//         const userid = document.getElementById('user-id') ;
+//         // const Token = 'your_token';
+
+//         try {
+//             const currentUser = await connecttoSB(userid);
+//             // Handle the result or perform further actions with currentUser
+//             console.log('Connected to SendBird. Current user:', currentUser);
+//         } catch (error) {
+//             // Handle any errors that occur during the connection
+//             console.error('Error connecting to SendBird:', error);
+//         }
+//     });
+// });
 
 async function creategroupchannel(userid)
     {
