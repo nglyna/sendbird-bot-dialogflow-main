@@ -197,7 +197,13 @@ app.post('/callback', express.json(), async (req, res) => {
          * Get input text and send to dialogflow
          */
         const msgText = message.text;
+        console.log(`botid = ${botId} , channelUrl : ${channelUrl}, megtext : ${msgText}`)
         console.log('Sending to DialogFlow...');
+        res.status(200).json({
+            
+            message: 'test complete'
+           
+        });
         /**
          * Send user message from Sendbird to dialogflow
          */
@@ -365,7 +371,7 @@ async function sendmessage(userid,message,channelurl)
 
 
 ///code where it runs
-main();
+//main();
 
 
 /**
